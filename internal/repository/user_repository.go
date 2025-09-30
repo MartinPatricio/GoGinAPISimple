@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/MartinPatricio/GoGinAPISimple/internal/repository/db"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // UserRepository define la interfaz para las operaciones de usuario.
@@ -20,13 +20,11 @@ type UserRepository interface {
 // SQLUserRepository es la implementación de UserRepository usando SQLC.
 type SQLUserRepository struct {
 	*db.Queries
-	database *sql.DB
+	database *pgxpool.Pool
 }
 
 // NewSQLUserRepository crea una nueva instancia de SQLUserRepository.
-func NewSQLUserRepository(database *sql.DB) UserRepository {
-	// La conexión 'database' (*sql.DB) satisface la interfaz DBTX
-	// que la función db.New() espera, por lo que se puede pasar directamente.
+func NewSQLUserRepository(database *pgxpool.Pool) UserRepository {
 	return &SQLUserRepository{
 		Queries:  db.New(database),
 		database: database,

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/MartinPatricio/GoGinAPISimple/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserHandler struct {
@@ -77,16 +77,16 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 		params := db.GetUsersWithFiltersParams{
 			Limit:       int32(pageSize),
 			Offset:      int32(offset),
-			NameFilter:  sql.NullString{String: "%" + nameFilter + "%", Valid: nameFilter != ""},
-			EmailFilter: sql.NullString{String: "%" + emailFilter + "%", Valid: emailFilter != ""},
+			NameFilter:  pgtype.Text{String: "%" + nameFilter + "%", Valid: nameFilter != ""},
+			EmailFilter: pgtype.Text{String: "%" + emailFilter + "%", Valid: emailFilter != ""},
 		}
-		// users, err = h.service.GetUsersWithFilters(c.Request.Context(), params)
+		users, err = h.service.GetUsersWithFilters(c.Request.Context(), params)
 	} else {
 		params := db.GetAllUsersParams{
 			Limit:  int32(pageSize),
 			Offset: int32(offset),
 		}
-		// users, err = h.service.GetAllUsers(c.Request.Context(), params)
+		users, err = h.service.GetAllUsers(c.Request.Context(), params)
 	}
 
 	if err != nil {

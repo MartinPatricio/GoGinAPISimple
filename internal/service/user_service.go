@@ -12,6 +12,7 @@ import (
 	"github.com/MartinPatricio/GoGinAPISimple/pkg/token"
 
 	"github.com/MartinPatricio/GoGinAPISimple/internal/config"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserService struct {
@@ -32,7 +33,9 @@ func (s *UserService) CreateUser(ctx context.Context, req db.CreateUserParams) (
 		return db.Tbluser{}, err
 	}
 	req.Password = hashedPassword
-	req.Lastactivitie = sql.NullTime{Time: time.Now(), Valid: true}
+
+	// ✅ 2. Cambia sql.NullTime por pgtype.Date
+	req.Lastactivitie = pgtype.Date{Time: time.Now(), Valid: true}
 
 	return s.repo.CreateUser(ctx, req)
 }
@@ -56,6 +59,14 @@ func (s *UserService) LoginUser(ctx context.Context, email, password string) (st
 	}
 
 	return jwtToken, nil
+}
+
+func (s *UserService) GetAllUsers(ctx context.Context, arg db.GetAllUsersParams) ([]db.Tbluser, error) {
+	return s.repo.GetAllUsers(ctx, arg)
+}
+
+func (s *UserService) GetUsersWithFilters(ctx context.Context, arg db.GetUsersWithFiltersParams) ([]db.Tbluser, error) {
+	return s.repo.GetUsersWithFilters(ctx, arg)
 }
 
 // Añade aquí los demás métodos del servicio que llamarán al repositorio
