@@ -1,0 +1,10 @@
+CREATE TABLE tblUsers (
+    idUser SERIAL PRIMARY KEY,
+    IdRol SMALLINT NOT NULL,
+    NameUser VARCHAR(30) NOT NULL,
+    Email VARCHAR(80) UNIQUE NOT NULL,
+    LastName VARCHAR(40) NOT NULL,
+    DateCreated DATE NOT NULL DEFAULT CURRENT_DATE,
+    LastActivitie DATE,
+    Password VARCHAR(255) NOT NULL
+);
