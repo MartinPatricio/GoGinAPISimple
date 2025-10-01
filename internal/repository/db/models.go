@@ -9,12 +9,12 @@ import (
 )
 
 type Tbluser struct {
-	Iduser        int32       `json:"iduser"`
-	Idrol         int16       `json:"idrol"`
-	Nameuser      string      `json:"nameuser"`
-	Email         string      `json:"email"`
-	Lastname      string      `json:"lastname"`
-	Datecreated   pgtype.Date `json:"datecreated"`
-	Lastactivitie pgtype.Date `json:"lastactivitie"`
-	Password      string      `json:"password"`
+	IdUser        int32       `json:"idUser"`
+	IdRol         int16       `json:"idRol"`
+	NameUser      string      `json:"NameUser"`
+	Email         string      `json:"Email"`
+	LastName      string      `json:"LastName"`
+	DateCreated   pgtype.Date `json:"DateCreated"`
+	LastActivitie pgtype.Date `json:"LastActivitie"`
+	Password      string      `json:"Password"`
 }

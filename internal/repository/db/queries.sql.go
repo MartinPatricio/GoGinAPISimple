@@ -12,49 +12,53 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO tblUsers (
-    IdRol, NameUser, Email, LastName, Password, LastActivitie
+
+INSERT INTO tblusers (
+    "idRol", "NameUser", "Email", "LastName", "Password", "LastActivitie", "DateCreated"
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING iduser, idrol, nameuser, email, lastname, datecreated, lastactivitie, password
+RETURNING "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password"
 `
 
 type CreateUserParams struct {
-	Idrol         int16       `json:"idrol"`
-	Nameuser      string      `json:"nameuser"`
-	Email         string      `json:"email"`
-	Lastname      string      `json:"lastname"`
-	Password      string      `json:"password"`
-	Lastactivitie pgtype.Date `json:"lastactivitie"`
+	IdRol         int16       `json:"idRol"`
+	NameUser      string      `json:"NameUser"`
+	Email         string      `json:"Email"`
+	LastName      string      `json:"LastName"`
+	Password      string      `json:"Password"`
+	LastActivitie pgtype.Date `json:"LastActivitie"`
+	DateCreated   pgtype.Date `json:"DateCreated"`
 }
 
+// internal/repository/queries.sql
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Tbluser, error) {
 	row := q.db.QueryRow(ctx, createUser,
-		arg.Idrol,
-		arg.Nameuser,
+		arg.IdRol,
+		arg.NameUser,
 		arg.Email,
-		arg.Lastname,
+		arg.LastName,
 		arg.Password,
-		arg.Lastactivitie,
+		arg.LastActivitie,
+		arg.DateCreated,
 	)
 	var i Tbluser
 	err := row.Scan(
-		&i.Iduser,
-		&i.Idrol,
-		&i.Nameuser,
+		&i.IdUser,
+		&i.IdRol,
+		&i.NameUser,
 		&i.Email,
-		&i.Lastname,
-		&i.Datecreated,
-		&i.Lastactivitie,
+		&i.LastName,
+		&i.DateCreated,
+		&i.LastActivitie,
 		&i.Password,
 	)
 	return i, err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM tblUsers
-WHERE idUser = $1
+DELETE FROM tblusers
+WHERE "idUser" = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, iduser int32) error {
@@ -63,8 +67,8 @@ func (q *Queries) DeleteUser(ctx context.Context, iduser int32) error {
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT iduser, idrol, nameuser, email, lastname, datecreated, lastactivitie, password FROM tblUsers
-ORDER BY idUser
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+ORDER BY "idUser"
 LIMIT $1
 OFFSET $2
 `
@@ -84,13 +88,13 @@ func (q *Queries) GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]Tbl
 	for rows.Next() {
 		var i Tbluser
 		if err := rows.Scan(
-			&i.Iduser,
-			&i.Idrol,
-			&i.Nameuser,
+			&i.IdUser,
+			&i.IdRol,
+			&i.NameUser,
 			&i.Email,
-			&i.Lastname,
-			&i.Datecreated,
-			&i.Lastactivitie,
+			&i.LastName,
+			&i.DateCreated,
+			&i.LastActivitie,
 			&i.Password,
 		); err != nil {
 			return nil, err
@@ -104,54 +108,54 @@ func (q *Queries) GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]Tbl
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT iduser, idrol, nameuser, email, lastname, datecreated, lastactivitie, password FROM tblUsers
-WHERE Email = $1 LIMIT 1
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+WHERE "Email" = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Tbluser, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i Tbluser
 	err := row.Scan(
-		&i.Iduser,
-		&i.Idrol,
-		&i.Nameuser,
+		&i.IdUser,
+		&i.IdRol,
+		&i.NameUser,
 		&i.Email,
-		&i.Lastname,
-		&i.Datecreated,
-		&i.Lastactivitie,
+		&i.LastName,
+		&i.DateCreated,
+		&i.LastActivitie,
 		&i.Password,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT iduser, idrol, nameuser, email, lastname, datecreated, lastactivitie, password FROM tblUsers
-WHERE idUser = $1 LIMIT 1
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+WHERE "idUser" = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, iduser int32) (Tbluser, error) {
 	row := q.db.QueryRow(ctx, getUserByID, iduser)
 	var i Tbluser
 	err := row.Scan(
-		&i.Iduser,
-		&i.Idrol,
-		&i.Nameuser,
+		&i.IdUser,
+		&i.IdRol,
+		&i.NameUser,
 		&i.Email,
-		&i.Lastname,
-		&i.Datecreated,
-		&i.Lastactivitie,
+		&i.LastName,
+		&i.DateCreated,
+		&i.LastActivitie,
 		&i.Password,
 	)
 	return i, err
 }
 
 const getUsersWithFilters = `-- name: GetUsersWithFilters :many
-SELECT iduser, idrol, nameuser, email, lastname, datecreated, lastactivitie, password FROM tblUsers
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
 WHERE
-    ($3::VARCHAR IS NULL OR NameUser ILIKE $3)
+    ($3::VARCHAR IS NULL OR "NameUser" ILIKE $3)
 AND
-    ($4::VARCHAR IS NULL OR Email ILIKE $4)
-ORDER BY idUser
+    ($4::VARCHAR IS NULL OR "Email" ILIKE $4)
+ORDER BY "idUser"
 LIMIT $1
 OFFSET $2
 `
@@ -178,13 +182,13 @@ func (q *Queries) GetUsersWithFilters(ctx context.Context, arg GetUsersWithFilte
 	for rows.Next() {
 		var i Tbluser
 		if err := rows.Scan(
-			&i.Iduser,
-			&i.Idrol,
-			&i.Nameuser,
+			&i.IdUser,
+			&i.IdRol,
+			&i.NameUser,
 			&i.Email,
-			&i.Lastname,
-			&i.Datecreated,
-			&i.Lastactivitie,
+			&i.LastName,
+			&i.DateCreated,
+			&i.LastActivitie,
 			&i.Password,
 		); err != nil {
 			return nil, err

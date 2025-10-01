@@ -2,16 +2,15 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
 
+	"github.com/MartinPatricio/GoGinAPISimple/internal/config"
 	"github.com/MartinPatricio/GoGinAPISimple/internal/repository"
 	"github.com/MartinPatricio/GoGinAPISimple/internal/repository/db"
 	"github.com/MartinPatricio/GoGinAPISimple/pkg/hash"
 	"github.com/MartinPatricio/GoGinAPISimple/pkg/token"
-
-	"github.com/MartinPatricio/GoGinAPISimple/internal/config"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -33,17 +32,15 @@ func (s *UserService) CreateUser(ctx context.Context, req db.CreateUserParams) (
 		return db.Tbluser{}, err
 	}
 	req.Password = hashedPassword
-
-	// ✅ 2. Cambia sql.NullTime por pgtype.Date
-	req.Lastactivitie = pgtype.Date{Time: time.Now(), Valid: true}
-
+	req.LastActivitie = pgtype.Date{Time: time.Now(), Valid: true}
+	req.DateCreated = pgtype.Date{Time: time.Now(), Valid: true}
 	return s.repo.CreateUser(ctx, req)
 }
 
 func (s *UserService) LoginUser(ctx context.Context, email, password string) (string, error) {
 	user, err := s.repo.GetUserByEmail(ctx, email)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return "", errors.New("invalid credentials")
 		}
 		return "", err
@@ -53,11 +50,10 @@ func (s *UserService) LoginUser(ctx context.Context, email, password string) (st
 		return "", errors.New("invalid credentials")
 	}
 
-	jwtToken, err := token.GenerateToken(user.Iduser, s.config.JwtSecretKey, s.config.JwtExpirationHours)
+	jwtToken, err := token.GenerateToken(user.IdUser, s.config.JwtSecretKey, s.config.JwtExpirationHours)
 	if err != nil {
 		return "", err
 	}
-
 	return jwtToken, nil
 }
 
@@ -69,5 +65,14 @@ func (s *UserService) GetUsersWithFilters(ctx context.Context, arg db.GetUsersWi
 	return s.repo.GetUsersWithFilters(ctx, arg)
 }
 
-// Añade aquí los demás métodos del servicio que llamarán al repositorio
-// (DeleteUser, GetUserByID, GetAllUsers, etc.)
+// internal/service/user_service.go
+
+// ... (resto de tu código de servicio) ...
+
+func (s *UserService) GetUserByID(ctx context.Context, id int32) (db.Tbluser, error) {
+	return s.repo.GetUserByID(ctx, id)
+}
+
+func (s *UserService) DeleteUser(ctx context.Context, id int32) error {
+	return s.repo.DeleteUser(ctx, id)
+}

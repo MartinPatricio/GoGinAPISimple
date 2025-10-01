@@ -1,35 +1,37 @@
+-- internal/repository/queries.sql
+
 -- name: CreateUser :one
-INSERT INTO tblUsers (
-    IdRol, NameUser, Email, LastName, Password, LastActivitie
+INSERT INTO tblusers (
+    "idRol", "NameUser", "Email", "LastName", "Password", "LastActivitie", "DateCreated"
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING *;
+RETURNING "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password";
 
 -- name: GetUserByID :one
-SELECT * FROM tblUsers
-WHERE idUser = $1 LIMIT 1;
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+WHERE "idUser" = $1 LIMIT 1;
 
 -- name: GetUserByEmail :one
-SELECT * FROM tblUsers
-WHERE Email = $1 LIMIT 1;
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+WHERE "Email" = $1 LIMIT 1;
 
 -- name: DeleteUser :exec
-DELETE FROM tblUsers
-WHERE idUser = $1;
+DELETE FROM tblusers
+WHERE "idUser" = $1;
 
 -- name: GetAllUsers :many
-SELECT * FROM tblUsers
-ORDER BY idUser
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
+ORDER BY "idUser"
 LIMIT $1
 OFFSET $2;
 
 -- name: GetUsersWithFilters :many
-SELECT * FROM tblUsers
+SELECT "idUser", "idRol", "NameUser", "Email", "LastName", "DateCreated", "LastActivitie", "Password" FROM tblusers
 WHERE
-    (sqlc.narg(name_filter)::VARCHAR IS NULL OR NameUser ILIKE sqlc.narg(name_filter))
+    (sqlc.narg(name_filter)::VARCHAR IS NULL OR "NameUser" ILIKE sqlc.narg(name_filter))
 AND
-    (sqlc.narg(email_filter)::VARCHAR IS NULL OR Email ILIKE sqlc.narg(email_filter))
-ORDER BY idUser
+    (sqlc.narg(email_filter)::VARCHAR IS NULL OR "Email" ILIKE sqlc.narg(email_filter))
+ORDER BY "idUser"
 LIMIT $1
 OFFSET $2;

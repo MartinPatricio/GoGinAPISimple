@@ -29,8 +29,8 @@ func SetupRouter(userService *service.UserService, cfg *config.Config) *gin.Engi
 		users := api.Group("/users")
 		{
 			users.GET("", userHandler.GetAllUsers)
-			users.GET("/:id", userHandler.GetUserByID)
-			users.DELETE("/:id", nil) // Añadir handler para DeleteUser
+			users.GET("/:id", userHandler.GetUserByID)   // Esta línea ahora funcionará
+			users.DELETE("/:id", userHandler.DeleteUser) // Y esta también
 		}
 	}
 

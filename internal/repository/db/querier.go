@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	// internal/repository/queries.sql
 	CreateUser(ctx context.Context, arg CreateUserParams) (Tbluser, error)
 	DeleteUser(ctx context.Context, iduser int32) error
 	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]Tbluser, error)
